@@ -156,9 +156,25 @@ func filterLines(allLines []string, args arguments) []linesInfo {
 	} else if flagOneLine {
 		lines = append(lines, linesInfo{originalPrev, count})
 	}
-	return lines
+	
+	return filterDU(lines, args)
 }
 
+func filterDU (lines []linesInfo, args arguments) []linesInfo {
+	var filterWithDU []linesInfo
+	for _,line:= range lines {
+		if args.countLine {//флаг c
+			filterWithDU = append(filterWithDU, line)
+		} else if args.duplicates && line.count > 1 { //параметр d
+			filterWithDU = append(filterWithDU, line)
+		} else if args.unique && line.count == 1 { //параметр u
+			filterWithDU = append(filterWithDU, line)
+		} else if !args.countLine && !args.duplicates && !args.unique {
+			filterWithDU = append(filterWithDU, line)
+		}
+	}
+	return filterWithDU
+}
 
 func writeIntoOutput(lines []linesInfo, args arguments) {
 	var writer io.Writer = os.Stdout
