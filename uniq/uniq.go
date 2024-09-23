@@ -25,25 +25,6 @@ type linesInfo struct {//информация для 1 строчки
 	count int
 }
 
-// func uniq(input io.Reader, output io.Writer) error {
-// 	in := bufio.NewScanner(input)
-// 	text, err := io.ReadAll(input)
-// 	if err != nil {
-		
-// 	}
-
-// 	var prev string
-// 	for in.Scan() {
-// 		txt := in.Text()
-// 		if txt == prev{
-// 			continue
-// 		}
-// 		prev = txt
-// 		fmt.Fprintln(output, txt)
-// 	}
-// 	return nil
-// }
-
 func parseArguments() arguments {//парсинг аргументов при помощи flag
 	var args arguments
 	//привязка к переменным
@@ -95,18 +76,6 @@ func readFromInput(input io.Reader) []string {
 
 //чтение из ввода, фильтрация согласно параметрам
 func filterLines(allLines []string, args arguments) []linesInfo {
-	// var readFrom io.Reader
-	// if args.inputFile == "" {//если нет файла
-	// 	readFrom = os.Stdin
-	// } else {
-	// 	var err error
-	// 	readFrom, err = os.Open(args.inputFile)
-	// 	if err != nil {
-	// 		fmt.Println("Ошибка при чтении файла")
-	// 		os.Exit(1)
-	// 	}
-	// }
-	// inData := bufio.NewScanner(readFrom)
 	var lines []linesInfo//список строк
 	var prev string//предыдущая строка
 	var count int//количество идущих подряд строк
@@ -200,28 +169,13 @@ func writeIntoOutput(lines []linesInfo, args arguments) {
 		}
 	}
 }
-// func filterLine(line string, args arguments) string {
-// 	if args.numFields > 0 {
 
-// 	}
-
-// 	if args.numChars > 0 && len(line) > args.numChars{
-// 		line = line[args.numChars:]
-// 	}
-// }
-
-func main() {
+func uniq() {
 	args := parseArguments()
-	// fmt.Println(args)
 	input := readInput(args.inputFile)
 
 	lines := readFromInput(input)
 
 	filteredLines := filterLines(lines, args)
 	writeIntoOutput(filteredLines,args)
-	// err := uniq(os.Stdin, os.Stdout)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	os.Exit(1)
-	// }
 }

@@ -22,7 +22,6 @@ func twoNumOp(num1 float64, num2 float64, op byte) float64 { // Вычислен
 }
 
 func compareOp(op1 byte, op2 byte) bool { // Сравнение приоритета
-	// fmt.Println(string(op1), string(op2))
 	if op1 == op2 {
 		return true
 	} else if (op1 == '*' || op1 == '/') && (op2 == '+' || op2 == '-'|| op2 == '*'|| op2 == '/') {
@@ -55,7 +54,6 @@ func calculate (expression string) float64 {
 				numbers = numbers[:len(numbers) - 1]
 				oneOperation := operations[len(operations) - 1]
 				operations = operations[:len(operations) - 1]
-				// fmt.Println(num2,num1,twoNumOp(num2, num1, oneOperation))
 				numbers = append(numbers, twoNumOp(num2, num1, oneOperation))
 			}
 			if minus_braket !=0 && len(numbers) == 1 {
@@ -80,7 +78,6 @@ func calculate (expression string) float64 {
 			}
 			i--
 			num, _ := strconv.ParseFloat(one_number,64)
-			// fmt.Println(num)
 			numbers = append(numbers, num)
 		} else {
 			for len(operations) > 0 { // Производим операции
@@ -91,7 +88,6 @@ func calculate (expression string) float64 {
 					numbers = numbers[:len(numbers) - 1]
 					oneOperation := operations[len(operations) - 1]
 					operations = operations[:len(operations) - 1]
-					// fmt.Println(num2,num1,twoNumOp(num2, num1, oneOperation))
 					numbers = append(numbers, twoNumOp(num2, num1, oneOperation))
 				} else {
 					break
@@ -101,23 +97,20 @@ func calculate (expression string) float64 {
 		}
 	}
 	for len(operations) > 0 { // Добивае финальные операции
-		// fmt.Println(numbers)
 		num1 := numbers[len(numbers) - 1]
 		numbers = numbers[:len(numbers) - 1]
 		num2 := numbers[len(numbers) - 1]
 		numbers = numbers[:len(numbers) - 1]
 		oneOperation := operations[len(operations) - 1]
 		operations = operations[:len(operations) - 1]
-		// fmt.Println(num2,num1,twoNumOp(num2, num1, oneOperation))
 		numbers = append(numbers, twoNumOp(num2, num1, oneOperation))
 	}
 	return numbers[0]
 }
 
-func main() {
+func calc() {
 	data := bufio.NewScanner(os.Stdin)
 	data.Scan()
 	exspression := data.Text()
-	// exspression := "-(-11-(1*20/2)-11/2*3)"
 	fmt.Println(calculate(exspression))
 }
