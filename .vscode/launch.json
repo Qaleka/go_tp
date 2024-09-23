@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceRoot}"
+            "program": "C:/Users/Andrey/Desktop/тп/2 сем/go/go_tp/calc/calc.go"
         }
     ]
 }
