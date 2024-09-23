@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func twoNumOp(num1 float64, num2 float64, op byte) float64 {
+func twoNumOp(num1 float64, num2 float64, op byte) float64 { // Вычисление
 	switch op {
 	case '+':
 		return num1 + num2
@@ -21,7 +21,7 @@ func twoNumOp(num1 float64, num2 float64, op byte) float64 {
 	return 0
 }
 
-func compareOp(op1 byte, op2 byte) bool {
+func compareOp(op1 byte, op2 byte) bool { // Сравнение приоритета
 	// fmt.Println(string(op1), string(op2))
 	if op1 == op2 {
 		return true
@@ -41,13 +41,13 @@ func calculate (expression string) float64 {
 	var one_number string
 	var minus_braket int
 	for i := 0; i < len(expression); i++ {
-		if expression[i] == '(' {
+		if expression[i] == '(' { // Добавляем в операции(и добавляем минус, если нужен)
 			if len(numbers) == 0 && len(operations) >= 1 && operations[len(operations) - 1] == '-' {
 				minus_braket++
 				operations = operations[:len(operations) - 1]
 			}
 			operations = append(operations, expression[i])
-		} else if expression[i] == ')' {
+		} else if expression[i] == ')' { // Если встретили закрывающую, то читаем операции до открывающей
 			for len(operations) > 0 && operations[len(operations) - 1] != '(' {
 				num1 := numbers[len(numbers) - 1]
 				numbers = numbers[:len(numbers) - 1]
@@ -63,7 +63,7 @@ func calculate (expression string) float64 {
 				minus_braket--
 			}
 			operations = operations[:len(operations) - 1]
-		} else if expression[i] >= '0' && expression[i] <= '9' {
+		} else if expression[i] >= '0' && expression[i] <= '9' { // Если число, то добавляем в числа
 			one_number = ""
 			if len(operations) > 0 && operations[len(operations) - 1] == '-' {
 				if len(numbers) == 0 {
@@ -83,7 +83,7 @@ func calculate (expression string) float64 {
 			// fmt.Println(num)
 			numbers = append(numbers, num)
 		} else {
-			for len(operations) > 0 {
+			for len(operations) > 0 { // Производим операции
 				if compareOp(operations[len(operations) - 1], expression[i]) {
 					num1 := numbers[len(numbers) - 1]
 					numbers = numbers[:len(numbers) - 1]
@@ -100,8 +100,7 @@ func calculate (expression string) float64 {
 			operations = append(operations, expression[i])
 		}
 	}
-	fmt.Println(string(operations))
-	for len(operations) > 0 {
+	for len(operations) > 0 { // Добивае финальные операции
 		// fmt.Println(numbers)
 		num1 := numbers[len(numbers) - 1]
 		numbers = numbers[:len(numbers) - 1]
