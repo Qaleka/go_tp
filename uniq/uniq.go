@@ -65,13 +65,19 @@ func readInput(input string) io.ReadCloser {
 	return file
 }
 
-func readFromInput(input io.Reader) []string {
+func readFromInput(input io.ReadCloser) ([]string, error) {
+	defer input.Close()
 	data := bufio.NewScanner(input)
 	var lines []string
 	for data.Scan() {
-		lines = append(lines, data.Text())
+		err := data.Err()
+		if err != nil {
+			return nil, err
+		}
+		line := data.Text()
+		lines = append(lines, line)
 	}
-	return lines
+	return lines, nil
 }
 
 //чтение из ввода, фильтрация согласно параметрам
@@ -129,16 +135,17 @@ func filterLines(allLines []string, args arguments) []linesInfo {
 	return filterDU(lines, args)
 }
 
-func filterDU (lines []linesInfo, args arguments) []linesInfo {
+func filterDU(lines []linesInfo, args arguments) []linesInfo {
 	var filterWithDU []linesInfo
 	for _,line:= range lines {
-		if args.countLine {//флаг c
+		switch {
+		case args.countLine:
 			filterWithDU = append(filterWithDU, line)
-		} else if args.duplicates && line.count > 1 { //параметр d
+		case args.duplicates && line.count > 1:
 			filterWithDU = append(filterWithDU, line)
-		} else if args.unique && line.count == 1 { //параметр u
+		case args.unique && line.count == 1:
 			filterWithDU = append(filterWithDU, line)
-		} else if !args.countLine && !args.duplicates && !args.unique {
+		case !args.countLine && !args.duplicates && !args.unique:
 			filterWithDU = append(filterWithDU, line)
 		}
 	}
@@ -158,13 +165,14 @@ func writeIntoOutput(lines []linesInfo, args arguments) {
 	}
 
 	for _,line:= range lines {
-		if args.countLine {//флаг c
+		switch {
+		case args.countLine:
 			fmt.Fprintf(writer, "%d %s\n", line.count, line.line)
-		} else if args.duplicates && line.count > 1 { //параметр d
+		case args.duplicates && line.count > 1:
 			fmt.Fprintln(writer, line.line)
-		} else if args.unique && line.count == 1 { //параметр u
+		case args.unique && line.count == 1:
 			fmt.Fprintln(writer, line.line)
-		} else if !args.countLine && !args.duplicates && !args.unique {
+		case !args.countLine && !args.duplicates && !args.unique:
 			fmt.Fprintln(writer, line.line)
 		}
 	}
@@ -174,7 +182,10 @@ func uniq() {
 	args := parseArguments()
 	input := readInput(args.inputFile)
 
-	lines := readFromInput(input)
+	lines, err := readFromInput(input)
+	if err != nil {
+		fmt.Printf("Ошибка при чтении: %s", err)
+	}
 
 	filteredLines := filterLines(lines, args)
 	writeIntoOutput(filteredLines,args)

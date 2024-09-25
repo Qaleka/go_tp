@@ -1,9 +1,9 @@
 package main
 
 import (
-  "reflect"
-  "testing"
-  "bufio"
+	"bufio"
+	"reflect"
+	"testing"
 )
 
 func TestProcessLines_NoFlags(t *testing.T) {
@@ -160,7 +160,10 @@ func TestProcessLines_InputFile(t *testing.T) {
     inputFile: "test.txt",
   }
   input := readInput(args.inputFile)
-  lines = readFromInput(input)
+  lines, err := readFromInput(input)
+  if err != nil {
+    t.Errorf("Ошибка при чтении: %s", err)
+  }
   expected := []linesInfo{
     {"I love music.", 3},
     {"", 1},
@@ -230,7 +233,10 @@ func TestProcessLines_InputAndOutputFile(t *testing.T) {
   }
 
   input := readInput(args.inputFile)
-  lines = readFromInput(input)
+  lines, err := readFromInput(input)
+  if err != nil {
+    t.Errorf("Ошибка при чтении: %s", err)
+  }
 
   result := filterLines(lines, *args)
   writeIntoOutput(result,*args)
