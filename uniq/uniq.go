@@ -82,13 +82,16 @@ func readFromInput(input io.ReadCloser) ([]string, error) {
 
 //чтение из ввода, фильтрация согласно параметрам
 func filterLines(allLines []string, args arguments) []linesInfo {
-	var lines []linesInfo//список строк
-	var prev string//предыдущая строка
-	var count int//количество идущих подряд строк
-	var flagOneLine bool = false//флаг для случая 1 строки
-	var original string//оригинал дубликатов до преобразований строки
-	var flagOriginal bool = false//флаг для того, что использовать оригинал или нет
-	var originalPrev string //предыдущая строка без преобразований
+	var (
+		lines []linesInfo//список строк
+		prev string//предыдущая строка
+		count int//количество идущих подряд строк
+		flagOneLine bool = false//флаг для случая 1 строки
+		original string//оригинал дубликатов до преобразований строки
+		flagOriginal bool = false//флаг для того, что использовать оригинал или нет
+		originalPrev string //предыдущая строка без преобразований
+	)
+
 	for _, txt:= range allLines {
 		buff := txt
 		if args.numFields > 0 {//параметр f
@@ -127,7 +130,6 @@ func filterLines(allLines []string, args arguments) []linesInfo {
 	}
 	if flagOriginal {
 		lines = append(lines, linesInfo{original, count})
-		flagOriginal = false
 	} else if flagOneLine {
 		lines = append(lines, linesInfo{originalPrev, count})
 	}

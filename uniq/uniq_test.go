@@ -155,7 +155,6 @@ func TestProcessLines_UniqueFlag(t *testing.T) {
 }
 
 func TestProcessLines_InputFile(t *testing.T) {
-  lines := []string{}
   args := &arguments{
     inputFile: "test.txt",
   }
@@ -210,7 +209,7 @@ func TestProcessLines_OutputFile(t *testing.T) {
   data := bufio.NewScanner(output)
 	var outputLines []string
 	for data.Scan() {
-		lines = append(outputLines, data.Text())
+		outputLines = append(outputLines, data.Text())
 	}
 
   if !reflect.DeepEqual(result, expected) {
@@ -219,7 +218,6 @@ func TestProcessLines_OutputFile(t *testing.T) {
 }
 
 func TestProcessLines_InputAndOutputFile(t *testing.T) {
-  lines := []string{}
   args := &arguments{
     inputFile: "test.txt",
     outputFile: "testOutput.txt",
@@ -245,7 +243,7 @@ func TestProcessLines_InputAndOutputFile(t *testing.T) {
   data := bufio.NewScanner(output)
 	var outputLines []string
 	for data.Scan() {
-		lines = append(outputLines, data.Text())
+		outputLines = append(outputLines, data.Text())
 	}
 
   if !reflect.DeepEqual(result, expected) {

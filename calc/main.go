@@ -1,9 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"log"
+)
 
 func main() {
 	if err := calc(); err != nil {
-		fmt.Printf("Ошибка при выполнении: %s", err)
+		log.Fatal("Ошибка при выполнении: %s", err)
 	}
 }

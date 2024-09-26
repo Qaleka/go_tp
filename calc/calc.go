@@ -55,10 +55,12 @@ func operationWithNumbers(numbers *[]float64, operations *[]byte) (error) {
 }
 
 func calculate(expression string) (float64, error) {
-	var operations []byte
-	var numbers []float64
-	var one_number string
-	var minus_braket int
+	var (
+		operations []byte
+		numbers []float64
+		one_number string
+		minus_braket int
+	)
 	for i := 0; i < len(expression); i++ {
 		switch {
 		case expression[i] == '(':
