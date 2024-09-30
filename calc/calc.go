@@ -39,19 +39,26 @@ func compareOp(op1 byte, op2 byte) bool { // Сравнение приорите
 	return false
 }
 
-func operationWithNumbers(numbers *[]float64, operations *[]byte) (error) {
-	num1 := (*numbers)[len(*numbers) - 1]
-	*numbers = (*numbers)[:len(*numbers) - 1]
-	num2 := (*numbers)[len(*numbers) - 1]
-	*numbers = (*numbers)[:len(*numbers) - 1]
-	oneOperation := (*operations)[len(*operations) - 1]
-	*operations = (*operations)[:len(*operations) - 1]
+func operationWithNumbers(numbers []float64, operations []byte) ([]float64, []byte, error) {
+	newNumbers := append([]float64{}, numbers...)
+	newOperations := append([]byte{}, operations...)
+
+	num1 := newNumbers[len(newNumbers)-1]
+	newNumbers = newNumbers[:len(newNumbers)-1]
+	num2 := newNumbers[len(newNumbers)-1]
+	newNumbers = newNumbers[:len(newNumbers)-1]
+
+	oneOperation := newOperations[len(newOperations)-1]
+	newOperations = newOperations[:len(newOperations)-1]
+
 	opResult, err := twoNumOp(num2, num1, oneOperation)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
-	*numbers = append(*numbers, opResult)
-	return nil
+
+	newNumbers = append(newNumbers, opResult)
+
+	return newNumbers, newOperations, nil
 }
 
 func calculate(expression string) (float64, error) {
@@ -60,6 +67,7 @@ func calculate(expression string) (float64, error) {
 		numbers []float64
 		one_number string
 		minus_braket int
+		err error
 	)
 	for i := 0; i < len(expression); i++ {
 		switch {
@@ -71,7 +79,7 @@ func calculate(expression string) (float64, error) {
 			operations = append(operations, expression[i])
 		case expression[i] == ')':
 			for len(operations) > 0 && operations[len(operations) - 1] != '(' {
-				err := operationWithNumbers(&numbers, &operations)
+				numbers, operations, err = operationWithNumbers(numbers, operations)
 				if err != nil {
 					return 0, err
 				}
@@ -105,7 +113,7 @@ func calculate(expression string) (float64, error) {
 		default:
 			for len(operations) > 0 { // Производим операции
 				if compareOp(operations[len(operations) - 1], expression[i]) {
-					err := operationWithNumbers(&numbers, &operations)
+					numbers, operations, err = operationWithNumbers(numbers, operations)
 					if err != nil {
 						return 0, err
 					}
@@ -117,7 +125,7 @@ func calculate(expression string) (float64, error) {
 		}
 	}
 	for len(operations) > 0 { // Добивае финальные операции
-		err := operationWithNumbers(&numbers, &operations)
+		numbers, operations, err = operationWithNumbers(numbers, operations)
 		if err != nil {
 			return 0, err
 		}
