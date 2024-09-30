@@ -43,10 +43,9 @@ func operationWithNumbers(numbers []float64, operations []byte) ([]float64, []by
 	newNumbers := append([]float64{}, numbers...)
 	newOperations := append([]byte{}, operations...)
 
-	num1 := newNumbers[len(newNumbers)-1]
-	newNumbers = newNumbers[:len(newNumbers)-1]
-	num2 := newNumbers[len(newNumbers)-1]
-	newNumbers = newNumbers[:len(newNumbers)-1]
+	num1 := numbers[len(numbers)-1]
+	num2 := numbers[len(numbers)-2]
+	newNumbers = numbers[:len(numbers)-2]
 
 	oneOperation := newOperations[len(newOperations)-1]
 	newOperations = newOperations[:len(newOperations)-1]
