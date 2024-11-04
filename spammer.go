@@ -1,7 +1,8 @@
-package go_tp
+package goTp
 
 import (
 	"fmt"
+	"log"
 	"sort"
 	"sync"
 )
@@ -36,7 +37,8 @@ func SelectUsers(in, out chan interface{}) {
 	for email := range in {
 		emailStr, ok := email.(string)
 		if !ok {
-			continue
+			log.Printf("Invalid type for email: %T, value: %v", email, email)
+			return
 		}
 
 		wg.Add(1)
@@ -44,19 +46,14 @@ func SelectUsers(in, out chan interface{}) {
 		go func(email string) {
 			defer wg.Done()
 
-			if alias, found := usersAliases[email]; found {
-				email = alias
-			}
-
 			user := GetUser(email)
 
 			mu.Lock()
-			if _, exists := seenUsers[user.ID]; !exists {
+			defer mu.Unlock()
+
+			if !seenUsers[user.ID] {
 				seenUsers[user.ID] = true
-				mu.Unlock()
 				out <- user
-			} else {
-				mu.Unlock()
 			}
 		}(emailStr)
 	}
@@ -72,7 +69,8 @@ func SelectMessages(in, out chan interface{}) {
 	for data := range in {
 		user, ok := data.(User)
 		if !ok {
-			continue
+			log.Printf("Invalid type for user: %T, value: %v", data, data)
+			return
 		}
 
 		mu.Lock()
@@ -86,10 +84,12 @@ func SelectMessages(in, out chan interface{}) {
 			go func(batch []User) {
 				defer wg.Done()
 				messages, err := GetMessages(batch...)
-				if err == nil {
-					for _, msg := range messages {
-						out <- msg
-					}
+				if err != nil {
+					log.Printf("Error getting messages for batch: %v", err)
+					return
+				}
+				for _, msg := range messages {
+					out <- msg
 				}
 			}(batch)
 		} else {
@@ -103,10 +103,12 @@ func SelectMessages(in, out chan interface{}) {
 		go func(batch []User) {
 			defer wg.Done()
 			messages, err := GetMessages(batch...)
-			if err == nil {
-				for _, msg := range messages {
-					out <- msg
-				}
+			if err != nil {
+				log.Printf("Error getting messages for remaining batch: %v", err)
+				return
+			}
+			for _, msg := range messages {
+				out <- msg
 			}
 		}(usersBatch)
 	}
@@ -122,7 +124,8 @@ func CheckSpam(in, out chan interface{}) {
 	for data := range in {
 		msgID, ok := data.(MsgID)
 		if !ok {
-			continue
+			log.Printf("Invalid type for MsgID: %T, value: %v", data, data)
+			return
 		}
 
 		wg.Add(1)
@@ -131,11 +134,12 @@ func CheckSpam(in, out chan interface{}) {
 
 			sem <- struct{}{}
 			hasSpam, err := HasSpam(msgID)
-			<-sem
-
-			if err == nil {
-				out <- MsgData{ID: msgID, HasSpam: hasSpam}
+			if err != nil {
+				log.Printf("Error checking spam for MsgID %v: %v", msgID, err)
+				return
 			}
+			<-sem
+			out <- MsgData{ID: msgID, HasSpam: hasSpam}
 		}(msgID)
 	}
 
@@ -149,6 +153,9 @@ func CombineResults(in, out chan interface{}) {
 		msgData, ok := data.(MsgData)
 		if ok {
 			results = append(results, msgData)
+		} else {
+			log.Printf("Invalid type for MsgData: %T, value: %v", data, data)
+			return
 		}
 	}
 

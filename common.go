@@ -1,4 +1,4 @@
-package go_tp
+package goTp
 
 import (
 	"errors"
